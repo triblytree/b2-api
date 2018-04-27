@@ -39,6 +39,12 @@ And add the following to 'required' in your composer.json
 "triblytree/b2-api": "dev-master"
 ```
 
+And run
+
+```
+composer update
+```
+
 ####Requirements
 - PHP 5.3.3+ (works on 7.0)
 - php-curl
