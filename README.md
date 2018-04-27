@@ -33,10 +33,10 @@ Add the following to your 'repositories' in your composer.json
 ]
 ```
 
-And run
+And add the following to 'required' in your composer.json
 
 ```
-composer require triblytree/b2-api
+"triblytree/b2-api": "dev-master"
 ```
 
 ####Requirements
@@ -67,98 +67,84 @@ Currently only the following API calls are supported, see the examples directory
 
 #### b2_create_bucket
 ```php
-b2_create_bucket($api_url, $account_id, $auth_token, $bucket_name, $bucket_type)
+b2_create_bucket($bucket_name, $bucket_type)
 
-$api_url // The API URL, obtained from the b2_authorize_account call
-$account_id // Obtained from your B2 account page or from the b2_authorize_account call
-$auth_token // The authentication token, obtained from the b2_authorize_account call
 $bucket_name // The new bucket's name. 6 char min, 50 char max, letters, digits, - and _ are allowed
 $bucket_type // Type to create the bucket as, either allPublic or allPrivate
 ```
 
 #### b2_delete_bucket
 ```php
-b2_delete_bucket($api_url, $account_id, $auth_token, $bucket_id)
+b2_delete_bucket($bucket_id)
 
-$api_url // The API URL, obtained from the b2_authorize_account call
-$account_id // Obtained from your B2 account page or from the b2_authorize_account call
-$auth_token // The authentication token, obtained from the b2_authorize_account call
 $bucket_id // The ID of the bucket you want to delete
 ```
 
 #### b2_delete_file_version
 ```php
-b2_delete_file_version($api_url, $auth_token, $file_id, $file_name)
+b2_delete_file_version($file_id, $file_name)
 
-$api_url // The API URL, obtained from the b2_authorize_account call
-$auth_token // The authentication token, obtained from the b2_authorize_account call
 $file_id // The ID of the file you want to delete
 $file_name // The file name of the file you want to delete
 ```
 
+#### b2_get_download_authorization
+```php
+b2_get_download_authorization($bucket_name, $file_name, $seconds = 3600);
+
+$bucket_name // The name of the bucket you wish to download from
+$file_name // The name of the file you wish to download
+$seconds // The number of seconds this downloa authorization will be valid for. Default: 3600 (1 hour)
+```
+```
+
 #### b2_download_file_by_id
 ```php
-b2_download_file_by_id($download_url, $file_id, [$auth_token])
+b2_download_file_by_id($file_id)
 
-$download_url // The download URL, obtained from the b2_authorize_account call
 $file_id // The ID of the file you wish to download
-$auth_token // Only required if bucket is private, obtained from the b2_authorize_account call
 ```
 
 #### b2_download_file_by_name
 ```php
-b2_download_file_by_name($download_url, $bucket_name, $file_name, [$auth_token]);
+b2_download_file_by_name($bucket_name, $file_name);
 
-$download_url // The download URL, obtained from the b2_authorize_account call
 $bucket_name // The name of the bucket you wish to download from
 $file_name // The name of the file you wish to download
-$auth_token // Only required if bucket is private, obtained from the b2_authorize_account call
 ```
 
 #### b2_get_file_info
 ```php
-b2_get_file_info($api_url, $auth_token, $file_id)
+b2_get_file_info($file_id)
 
-$api_url // The API URL, obtained from the b2_authorize_account call
-$auth_token // The authentication token, obtained from the b2_authorize_account call
 $file_id // The ID of the file you wish to recieve the info of
 ```
 
 #### b2_get_upload_url
 ```php
-b2_get_upload_url($api_url, $account_id, $auth_token, $bucket_id)
+b2_get_upload_url($bucket_id)
 
-$api_url // The API URL, obtained from the b2_authorize_account call
-$account_id // Obtained from your B2 account page or from the b2_authorize_account call
-$auth_token // The authentication token, obtained from the b2_authorize_account call
 $bucket_id // The ID of the bucket you want to upload to
 ```
 
 #### b2_hide_file
 ```php
-b2_hide_file($api_url, $auth_token, $bucket_id, $file_name)
+b2_hide_file($bucket_id, $file_name)
 
-$api_url // The API URL, obtained from the b2_authorize_account call
-$auth_token // The authentication token, obtained from the b2_authorize_account call
 $bucket_id // The ID of the bucket containing the file you wish to hide
 $file_name // The name of the file you wish to hide
 ```
 
 #### b2_list_buckets
 ```php
-b2_list_buckets($api_url, $auth_token, $account_id)
+b2_list_buckets($account_id)
 
-$api_url // The API URL, obtained from the b2_authorize_account call
-$auth_token // The authentication token, obtained from the b2_authorize_account call
-$account_id // Obtained from your B2 account page or from the b2_authorize_account call
 ```
 
 #### b2_list_file_names
 ```php
-b2_list_file_names($api_url, $auth_token, $bucket_id, [$options])
+b2_list_file_names($bucket_id, [$options])
 
-$api_url // The API URL, obtained from the b2_authorize_account call
-$auth_token // The authentication token, obtained from the b2_authorize_account call
 $bucket_id // The ID of the bucket containing the files you wish to list
 
 $options = array( // None of these options are required but may be used
@@ -169,10 +155,8 @@ $options = array( // None of these options are required but may be used
 
 #### b2_list_file_versions
 ```php
-b2_list_file_versions($api_url, $auth_token, $bucket_id, [$options])
+b2_list_file_versions($bucket_id, [$options])
 
-$api_url // The API URL, obtained from the b2_authorize_account call
-$auth_token // The authentication token, obtained from the b2_authorize_account call
 $bucket_id // The ID of the bucket containing the files you wish to list
 
 $options = array( // None of these options are required but may be used
@@ -184,11 +168,8 @@ $options = array( // None of these options are required but may be used
 
 #### b2_update_bucket
 ```php
-b2_update_bucket($api_url, $account_id, $auth_token, $bucket_id, $bucket_type)
+b2_update_bucket($bucket_id, $bucket_type)
 
-$api_url // The API URL, obtained from the b2_authorize_account call
-$account_id // Obtained from your B2 account page or from the b2_authorize_account call
-$auth_token // The authentication token, obtained from the b2_authorize_account call
 $bucket_id // The ID of the bucket you want to update
 $bucket_type // Type to change to, either allPublic or allPrivate
 ```
@@ -198,6 +179,5 @@ $bucket_type // Type to change to, either allPublic or allPrivate
 b2_upload_file($upload_url, $auth_token, $file_path)
 
 $upload_url // Upload URL, obtained from the b2_get_upload_url call
-$auth_token // The authentication token, obtained from the b2_authorize_account call
 $file_path // The path to the file you wish to upload
 ```
