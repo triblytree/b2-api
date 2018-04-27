@@ -22,8 +22,21 @@ OR
 
 For you folks that use Composer
 
+Add the following to your 'repositories' in your composer.json
+
 ```
-  composer require ukn0me/b2-api
+"repositories": [
+		{
+        "type": "git",
+        "url": "https://github.com/triblytree/b2-api.git"
+    }
+]
+```
+
+And run
+
+```
+composer require ukn0me/b2-api
 ```
 
 ####Requirements
