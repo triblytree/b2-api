@@ -26,8 +26,8 @@ Add the following to your 'repositories' in your composer.json
 
 ```
 "repositories": [
-		{
-        "type": "git",
+    {
+        "type": "vcs",
         "url": "https://github.com/triblytree/b2-api.git"
     }
 ]
@@ -36,7 +36,7 @@ Add the following to your 'repositories' in your composer.json
 And run
 
 ```
-composer require ukn0me/b2-api
+composer require triblytree/b2-api
 ```
 
 ####Requirements
