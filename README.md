@@ -9,7 +9,7 @@ This wrapper is in alpha and should not be used on production sites.
 1. Clone the repository
 
 ```
-git clone https://github.com/UKn0Me/b2-api.git
+git clone https://github.com/triblytree/b2-api.git
 ```
 
 2. Include b2_api.php when required
