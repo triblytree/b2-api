@@ -1,5 +1,5 @@
 #Backblaze B2 PHP API Wrapper 
-Forked by [Aidhan Dossel](https://aidhan.net/), originally by [Dan Rovito](https://www.danrovito.com)
+Forked by triblytree, originally by [Dan Rovito](https://www.danrovito.com) and [Aidhan Dossel](https://aidhan.net/)
 
 This is a PHP wrapper for the [Backblaze B2](https://www.backblaze.com/b2/cloud-storage.html) API.
 
