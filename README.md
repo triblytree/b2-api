@@ -53,19 +53,16 @@ composer update
 If you're using Composer, it should get all the dependencies figured out but you still need to have the PHP extensions installed.
 
 ###Sample code
-You need to pass your Account ID and Application key from your B2 account to get your authorization response. To call the authorization function do the following:
+You need to pass your Account ID and Application key from your B2 account to authorize access:
 
 ```php
-$b2 = new b2_api;
-$response = $b2->b2_authorize_account("ACCOUNTID", "APPLICATIONKEY");
-return $response;
+$b2 = new b2_api("ACCOUNTID", "APPLICATIONKEY");
 ```
 
-The response will contain the following as an array:
-- acccountId
-- authorizationToken
-- apiUrl
-- downloadUrl
+After authorizing, you can access the returned data if you need to on the $b2 object:
+- $b2->authorizationToken
+- $b2->apiUrl
+- $b2->downloadUrl
 
 ##Calls
 
@@ -73,97 +70,121 @@ Currently only the following API calls are supported, see the examples directory
 
 #### b2_create_bucket
 ```php
-b2_create_bucket($bucket_name, $bucket_type)
+$b2->b2_create_bucket($bucketName, $bucketType)
 
-$bucket_name // The new bucket's name. 6 char min, 50 char max, letters, digits, - and _ are allowed
-$bucket_type // Type to create the bucket as, either allPublic or allPrivate
+$bucketName // The new bucket's name. 6 char min, 50 char max, letters, digits, - and _ are allowed
+$bucketType // Type to create the bucket as, either allPublic or allPrivate
 ```
 
 #### b2_delete_bucket
 ```php
-b2_delete_bucket($bucket_id)
+$b2->b2_delete_bucket($bucketId)
 
-$bucket_id // The ID of the bucket you want to delete
+$bucketId // The ID of the bucket you want to delete
+```
+
+#### b2_list_buckets
+```php
+$b2->b2_list_buckets()
+
+```
+
+#### b2_get_bucket_id
+```php
+$b2->b2_get_bucket_id($bucketName)
+
+$bucketName // The name of the bucket you want to get the ID of
 ```
 
 #### b2_delete_file_version
 ```php
-b2_delete_file_version($file_id, $file_name)
+$b2->b2_delete_file_version($fileId, $fileName)
 
-$file_id // The ID of the file you want to delete
-$file_name // The file name of the file you want to delete
+$fileId // The ID of the file you want to delete
+$fileName // The file name of the file you want to delete
 ```
 
 #### b2_get_download_authorization
 ```php
-b2_get_download_authorization($bucket_name, $file_name, $seconds = 3600);
+$b2->b2_get_download_authorization($bucketId, $fileNamePrefix, $validDurationInSeconds = 3600);
 
-$bucket_name // The name of the bucket you wish to download from
-$file_name // The name of the file you wish to download
-$seconds // The number of seconds this downloa authorization will be valid for. Default: 3600 (1 hour)
+$bucketId // The ID of the bucket containing the file(s) you wish to authorize the downloading of
+$fileNamePrefix // The name or prefix of the file(s) you wish to authorize the downloading of
+$validDurationInSeconds // The number of seconds this downloa authorization will be valid for. Default: 3600 (1 hour)
 ```
 ```
 
 #### b2_download_file_by_id
 ```php
-b2_download_file_by_id($file_id)
+$b2->b2_download_file_by_id($fileId)
 
-$file_id // The ID of the file you wish to download
+$fileId // The ID of the file you wish to download
+```
+
+#### b2_download_file_by_id_url
+```php
+$b2->b2_download_file_by_id_url($fileId)
+
+$fileId // The ID of the file you wish to get the download URL of
 ```
 
 #### b2_download_file_by_name
 ```php
-b2_download_file_by_name($bucket_name, $file_name);
+$b2->b2_download_file_by_name($bucketName, $fileName, [$authorizationToken]);
 
-$bucket_name // The name of the bucket you wish to download from
-$file_name // The name of the file you wish to download
+$bucketName // The name of the bucket you wish to download from
+$fileName // The name of the file you wish to download
+$authorizationToken // The authorization token retrieved from a b2_get_download_authorization() call. Optional.
+```
+
+#### b2_download_file_by_name_url
+```php
+$b2->b2_download_file_by_name_url($bucketName, $fileName, [$authorizationToken]);
+
+$bucketName // The name of the bucket you wish to download from
+$fileName // The name of the file you wish to get the download URL of
+$authorizationToken // The authorization token retrieved from a b2_get_download_authorization() call. Optional.
 ```
 
 #### b2_get_file_info
 ```php
-b2_get_file_info($file_id)
+$b2->b2_get_file_info($fileId)
 
-$file_id // The ID of the file you wish to recieve the info of
+$fileId // The ID of the file you wish to recieve the info of
 ```
 
 #### b2_get_upload_url
 ```php
-b2_get_upload_url($bucket_id)
+$b2->b2_get_upload_url($bucketId)
 
-$bucket_id // The ID of the bucket you want to upload to
+$bucketId // The ID of the bucket you want to upload to
 ```
 
 #### b2_hide_file
 ```php
-b2_hide_file($bucket_id, $file_name)
+$b2->b2_hide_file($bucketId, $fileName)
 
-$bucket_id // The ID of the bucket containing the file you wish to hide
-$file_name // The name of the file you wish to hide
-```
-
-#### b2_list_buckets
-```php
-b2_list_buckets($account_id)
-
+$bucketId // The ID of the bucket containing the file you wish to hide
+$fileName // The name of the file you wish to hide
 ```
 
 #### b2_list_file_names
 ```php
-b2_list_file_names($bucket_id, [$options])
+$b2->b2_list_file_names($bucketId, [$options])
 
-$bucket_id // The ID of the bucket containing the files you wish to list
+$bucketId // The ID of the bucket containing the files you wish to list
 
 $options = array( // None of these options are required but may be used
-    "max_count" => "", // The maxiumum amount of file names to list in a call
-    "start_name" => "" // If the specified file name exists, it's the first listed
+    "maxFileCount" => "", // The maxiumum amount of file names to list in a call
+    "startFileName" => "" // If the specified file name exists, it's the first listed
 );
 ```
 
 #### b2_list_file_versions
 ```php
-b2_list_file_versions($bucket_id, [$options])
+$b2->b2_list_file_versions($bucketId, [$options])
 
-$bucket_id // The ID of the bucket containing the files you wish to list
+$bucketId // The ID of the bucket containing the files you wish to list
 
 $options = array( // None of these options are required but may be used
     "max_count" => "", // The maxiumum amount of file names to list in a call
@@ -174,16 +195,16 @@ $options = array( // None of these options are required but may be used
 
 #### b2_update_bucket
 ```php
-b2_update_bucket($bucket_id, $bucket_type)
+$b2->b2_update_bucket($bucketId, $bucketType)
 
-$bucket_id // The ID of the bucket you want to update
-$bucket_type // Type to change to, either allPublic or allPrivate
+$bucketId // The ID of the bucket you want to update
+$bucketType // Type to change to, either allPublic or allPrivate
 ```
 
 #### b2_upload_file
 ```php
-b2_upload_file($upload_url, $auth_token, $file_path)
+$b2->b2_upload_file($uploadUrl, $filePath)
 
-$upload_url // Upload URL, obtained from the b2_get_upload_url call
-$file_path // The path to the file you wish to upload
+$uploadUrl // Upload URL, obtained from the b2_get_upload_url call
+$filePath // The path to the file you wish to upload
 ```
