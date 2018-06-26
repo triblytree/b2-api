@@ -101,7 +101,7 @@ $bucketName // The name of the bucket you want to get the ID of
 $b2->b2_delete_file_version($fileId, $fileName)
 
 $fileId // The ID of the file you want to delete
-$fileName // The file name of the file you want to delete
+$fileName // The file name of the file you want to delete (including any folder you may haved put it in)
 ```
 
 #### b2_get_download_authorization
