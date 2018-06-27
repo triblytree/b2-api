@@ -159,7 +159,8 @@ $b2->b2_get_upload_url($bucketId)
 
 $bucketId // The ID of the bucket you want to upload to
 
-@return object An object that contains the uploadUrl and authorizationToken you'll use in $b2->b2_upload_file()
+// Returns
+An object containing the uploadUrl and authorizationToken you'll use in $b2->b2_upload_file()
 ```
 
 #### b2_hide_file
