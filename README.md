@@ -158,6 +158,8 @@ $fileId // The ID of the file you wish to recieve the info of
 $b2->b2_get_upload_url($bucketId)
 
 $bucketId // The ID of the bucket you want to upload to
+
+@return object An object that contains the uploadUrl and authorizationToken you'll use in $b2->b2_upload_file()
 ```
 
 #### b2_hide_file
@@ -203,9 +205,10 @@ $bucketType // Type to change to, either allPublic or allPrivate
 
 #### b2_upload_file
 ```php
-$b2->b2_upload_file($uploadUrl, $filePath, [$fileName])
+$b2->b2_upload_file($uploadUrl, $authorizationToken, $filePath, [$fileName])
 
 $uploadUrl // Upload URL, obtained from the b2_get_upload_url call
+$authorizationToken // The Authorization Token, obtained from the b2_get_upload_url call (this is NOT the authorization token [$b2->authorizationToken] we store when first authenticating/initializing the class)
 $filePath // The path to the file you wish to upload
 $fileName // Optional. The name for the file when stored on B2 (can include folder). Defaults to basename of $filePath.
 ```

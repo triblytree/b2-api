@@ -458,7 +458,7 @@
 
         }
 
-        // List update bucket
+        // Update bucket
         public function b2_update_bucket($bucketId, $bucketType)
         {
             $call_url    = $this->apiUrl."/b2api/v1/b2_update_bucket";
@@ -482,11 +482,12 @@
             return $result; // Return the result
         }
 
-        // List upload file
-        public function b2_upload_file($uploadUrl, $filePath, $fileName = NULL)
+         // Upload file
+        public function b2_upload_file($uploadUrl, $authorizationToken, $filePath, $fileName = NULL)
         {
             $call_url   = $uploadUrl; // Upload URL, obtained from the b2_get_upload_url call
-            $filePath  = $filePath; // The path to the file you wish to upload
+            $authorizationToken = $authorizationToken; // The Authorization Token, obtained from the b2_get_upload_url call (NOT $this->authorizationToken stored in this class via b2_authorize_account() call)
+            $filePath = $filePath; // The path to the file you wish to upload
 
             $handle = fopen($filePath, 'r');
             $read_file = fread($handle, filesize($filePath));
@@ -497,8 +498,8 @@
 
             // Add headers
             $headers = array(
-                "Authorization: {$this->authorizationToken}",
-                "X-Bz-File-Name: {$fileName}",
+                "Authorization: {$authorizationToken}",
+                "X-Bz-File-Name: ".rawurlencode($fileName),
                 "Content-Type: {$file_type}",
                 "X-Bz-Content-Sha1: {$file_hash}"
             );
