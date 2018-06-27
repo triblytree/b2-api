@@ -483,7 +483,7 @@
         }
 
         // List upload file
-        public function b2_upload_file($uploadUrl, $filePath)
+        public function b2_upload_file($uploadUrl, $filePath, $fileName = NULL)
         {
             $call_url   = $uploadUrl; // Upload URL, obtained from the b2_get_upload_url call
             $filePath  = $filePath; // The path to the file you wish to upload
@@ -491,7 +491,7 @@
             $handle = fopen($filePath, 'r');
             $read_file = fread($handle, filesize($filePath));
 
-            $fileName = basename($filePath);
+            if(!$fileName) $fileName = basename($filePath);
             $file_type = mime_content_type($filePath);
             $file_hash = sha1_file($filePath);
 

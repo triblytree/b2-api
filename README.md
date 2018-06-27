@@ -203,8 +203,9 @@ $bucketType // Type to change to, either allPublic or allPrivate
 
 #### b2_upload_file
 ```php
-$b2->b2_upload_file($uploadUrl, $filePath)
+$b2->b2_upload_file($uploadUrl, $filePath, [$fileName])
 
 $uploadUrl // Upload URL, obtained from the b2_get_upload_url call
 $filePath // The path to the file you wish to upload
+$fileName // Optional. The name for the file when stored on B2 (can include folder). Defaults to basename of $filePath.
 ```
