@@ -153,16 +153,6 @@ $b2->b2_get_file_info($fileId)
 $fileId // The ID of the file you wish to recieve the info of
 ```
 
-#### b2_get_upload_url
-```php
-$b2->b2_get_upload_url($bucketId)
-
-$bucketId // The ID of the bucket you want to upload to
-
-// Returns
-An object containing the uploadUrl and authorizationToken you'll use in $b2->b2_upload_file()
-```
-
 #### b2_hide_file
 ```php
 $b2->b2_hide_file($bucketId, $fileName)
@@ -204,7 +194,32 @@ $bucketId // The ID of the bucket you want to update
 $bucketType // Type to change to, either allPublic or allPrivate
 ```
 
+#### upload_file
+A helper function which handles all the aspects of file uploading, including large file uploads.
+Note: there are also upload_regular_file() and upload_large_file() methods you could use if you needed.
+```php
+$b2->upload_file($bucketId, $filePath, [$fileName], [$size], [$contentType])
+
+$bucketId // The ID of the bucket you want to upload to
+$filePath // The path to the file you wish to upload
+$fileName // Optional. The name for the file when stored on B2 (can include folder). Defaults to basename of $filePath.
+$size // Optional. The size of the file we're uploading. Defaults to filesize($filePath)
+$contentType // Optional. The content type of the file we're uploading. Large files only. Defaults to 'b2/x-auto' (B2 will automatically determine content type once large file is complete).
+```
+
+#### b2_get_upload_url
+Note: you can use $b2->upload_file() method to more easily handle file uploading.
+```php
+$b2->b2_get_upload_url($bucketId)
+
+$bucketId // The ID of the bucket you want to upload to
+
+// Returns
+An object containing the uploadUrl and authorizationToken you'll use in $b2->b2_$b2->upload_file()
+```
+
 #### b2_upload_file
+Note: you can use $b2->upload_file() method to more easily handle file uploading.
 ```php
 $b2->b2_upload_file($uploadUrl, $authorizationToken, $filePath, [$fileName])
 
@@ -212,4 +227,49 @@ $uploadUrl // Upload URL, obtained from the b2_get_upload_url call
 $authorizationToken // The Authorization Token, obtained from the b2_get_upload_url call (this is NOT the authorization token [$b2->authorizationToken] we store when first authenticating/initializing the class)
 $filePath // The path to the file you wish to upload
 $fileName // Optional. The name for the file when stored on B2 (can include folder). Defaults to basename of $filePath.
+```
+
+#### b2_start_large_file
+Note: you can use $b2->upload_file() method to more easily handle file uploading.
+```php
+$b2->b2_start_large_file($bucketId, [$fileName], [$contentType])
+
+$bucketId // The ID of the bucket you want to upload to
+$fileName // Optional. The name for the file when stored on B2 (can include folder). Defaults to basename of $filePath.
+$contentType // Optional. The content type of the file we're uploading. Large files only. Defaults to 'b2/x-auto' (B2 will automatically determine content type once large file is complete).
+
+// Returns
+An object containing the fileId you'll use in $b2->b2_get_upload_part_url()
+```
+
+#### b2_get_upload_part_url
+Note: you can use $b2->upload_file() method to more easily handle file uploading.
+```php
+$b2->b2_get_upload_url($fileId)
+
+$fileId // The file ID you retrieved via a $b2->b2_start_large_file() call
+
+// Returns
+An object containing the uploadUrl and authorizationToken you'll use in $b2->b2_upload_part()
+```
+
+#### b2_upload_part
+Note: you can use $b2->upload_file() method to more easily handle file uploading.
+```php
+$b2->b2_upload_part($uploadUrl, $authorizationToken, $partNumber, $body, [$sha])
+
+$uploadUrl // Upload URL, obtained from the b2_get_upload_part_url call
+$authorizationToken // The Authorization Token, obtained from the b2_get_upload_part_url call (this is NOT the authorization token [$b2->authorizationToken] we store when first authenticating/initializing the class)
+$partNumber // The part number we're uploading (starting with 1).                            
+$body // The actual body part we're uploading (ex: substr($body_full,0,1000)).
+$sha // Optional. The sha of the body part. Don't need to pass, just used internally for small speed improvement. Defaults to sha1($body).
+```
+
+#### b2_finish_large_file
+Note: you can use $b2->upload_file() method to more easily handle file uploading.
+```php
+$b2->b2_finish_large_file($fileId, $shaArray)
+
+$fileId // The file ID you retrieved via a $b2->b2_start_large_file() call
+$shaArray // An array of the sha 1 values you sent to the $b2->b2_upload_part() calls
 ```
