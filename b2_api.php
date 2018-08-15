@@ -70,7 +70,7 @@ class b2_api
 				$json = json_decode($http_result);
 				if(json_last_error() == JSON_ERROR_NONE || json_last_error() == 0) // Check if the response is JSON
 				{
-					if(!empty($json->status)) $error = $json->status.": ".$json->message;
+					if(!empty($json->status)) $error = $json->status.": ".$json->message.", full result: ".$http_result;
 				}
 				else
 				{
