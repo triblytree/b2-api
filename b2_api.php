@@ -539,7 +539,7 @@ class b2_api
 					}
 					catch(Exception $e) {
 						// Non-500 error - continue throwing error (if 500, we retry)
-						if($e->getCode() != 500) {
+						if(!in_array($e->getCode(),array(500,503))) {
 							$finished = 1;
 							throw $e;
 						}
@@ -579,7 +579,7 @@ class b2_api
 				}
 				catch(Exception $e) {
 					// Non-500 error - continue throwing error (if 500, we retry)
-					if($e->getCode() != 500) {
+					if(!in_array($e->getCode(),array(500,503))) {
 						$finished = 1;
 						throw $e;
 					}
