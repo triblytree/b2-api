@@ -35,6 +35,7 @@ class b2_api
 	function b2_call($call_url, $headers, $data = NULL, $json_result = true) 
 	{
 		$error = NULL;
+		$error_code = 0;
 		$session = curl_init();
 		curl_setopt($session, CURLOPT_URL, $call_url);
 
@@ -61,6 +62,7 @@ class b2_api
 		if(!$http_result = curl_exec($session)) { // Execute the request
 			// Error
 			$error = "Curl error: ".curl_error($session)." (".curl_errno($session).")";
+			$error_code = curl_errno($session);
 		}
 		curl_close($session); // Clean up
 
@@ -70,7 +72,10 @@ class b2_api
 				$json = json_decode($http_result);
 				if(json_last_error() == JSON_ERROR_NONE || json_last_error() == 0) // Check if the response is JSON
 				{
-					if(!empty($json->status)) $error = $json->status.": ".$json->message.", full result: ".$http_result;
+					if(!empty($json->status)) {
+						$error = $json->status.": ".$json->message.", full result: ".$http_result;
+						$error_code = $json->status;
+					}
 				}
 				else
 				{
@@ -83,7 +88,7 @@ class b2_api
 		
 		// Error
 		if($error) {
-			throw new Exception($error);
+			throw new Exception($error,$error_code);
 		}
 		// Return
 		else {
@@ -512,18 +517,34 @@ class b2_api
 				$bytesLeft = $size - $bytesSent;
 				$partSize = ($bytesLeft > $this->recommendedPartSize) ? $this->recommendedPartSize : $bytesLeft;
 				
-				// Retrieve the URL that we should be uploading to.
-				$result = $this->b2_get_upload_part_url($fileId);
-				
 				// Body part
 				$body_part = substr($body,$bytesSent,$partSize);
 				
 				// SHA - need when finishing upload, pass to b2_upload_part() as well to save a smidge of timme
 				$sha = sha1($body_part);
 				$shaArray[] = $sha;
+		
+				// Loop - https://www.backblaze.com/blog/b2-503-500-server-error/
+				$finished = 0;
+				while($finished == 0) {
+					try {
+						// Retrieve the URL that we should be uploading to.
+						$result = $this->b2_get_upload_part_url($fileId);
+						
+						// Upload part
+						$r = $this->b2_upload_part($result->uploadUrl,$result->authorizationToken,$i,$body_part,$sha);
 				
-				// Upload part
-				$r = $this->b2_upload_part($result->uploadUrl,$result->authorizationToken,$i,$body_part,$sha);
+						// Finished
+						$finished = 1;
+					}
+					catch(Exception $e) {
+						// Non-500 error - continue throwing error (if 500, we retry)
+						if($e->getCode() != 500) {
+							$finished = 1;
+							throw $e;
+						}
+					}
+				}
 			}
 			
 			// Finish upload of large file
@@ -541,15 +562,34 @@ class b2_api
 	public function upload_regular_file($bucketId,$filePath,$fileName = NULL) {
 		// File name
 		if(!$fileName) $fileName = basename($filePath);
-	
-		// Upload URL
-		$result = $this->b2_get_upload_url($bucketId);
-		if(!empty($result->uploadUrl)) {
-			// Upload
-			$result = $this->b2_upload_file($result->uploadUrl,$result->authorizationToken,$filePath,$fileName);
-			return $result;
+		
+		// Loop - https://www.backblaze.com/blog/b2-503-500-server-error/
+		$finished = 0;
+		while($finished == 0) {
+			// Upload URL
+			$result = $this->b2_get_upload_url($bucketId);
+			if(!empty($result->uploadUrl)) {
+				try {
+					// Upload
+					$result = $this->b2_upload_file($result->uploadUrl,$result->authorizationToken,$filePath,$fileName);
+					return $result;
+					
+					// Finished
+					$finished = 1;
+				}
+				catch(Exception $e) {
+					// Non-500 error - continue throwing error (if 500, we retry)
+					if($e->getCode() != 500) {
+						$finished = 1;
+						throw $e;
+					}
+				}
+			}
+			else {
+				$finished = 1;
+				throw new Exception("Error creationg file upload URL");
+			}
 		}
-		else throw new Exception("Error creationg file upload URL");
 	}
 
 	// Get upload URL
