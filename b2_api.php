@@ -32,7 +32,7 @@ class b2_api
 	}
 
 	// Base function for further calls
-	function b2_call($call_url, $headers, $data = NULL, $json_result = true) 
+	function b2_call($call_url, $headers, $data = NULL, $json_result = true,$try = 1) 
 	{
 		$error = NULL;
 		$error_code = 0;
@@ -88,7 +88,12 @@ class b2_api
 		
 		// Error
 		if($error) {
-			throw new Exception($error,$error_code);
+			// Re-try up to 3 times, B2 has all sort of issues, failure is built into how it works
+			if($try < 3) {
+				$try++;
+				$this->b2_call($call_url,$headers,$data,$json_result,$try);
+			}
+			else throw new Exception($error,$error_code);
 		}
 		// Return
 		else {
