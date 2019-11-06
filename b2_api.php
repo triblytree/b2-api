@@ -21,7 +21,8 @@ class b2_api
      * @var int
      */
     //public $largeFileLimit = 3000000000; // 3GB
-    public $largeFileLimit = 500000000; // 500MB
+    //public $largeFileLimit = 500000000; // 500MB
+    public $largeFileLimit = 50000000; // 50MB
 	
 	// Construct
 	public function __construct($acccountId, $appKey)
@@ -389,6 +390,7 @@ class b2_api
 	 */
 	public function b2_list_file_names($bucketId, $options = NULL)
 	{
+		if(!$bucketId) return;
 		$call_url   = $this->apiUrl."/b2api/v1/b2_list_file_names";
 
 		// Add POST fields
@@ -508,8 +510,12 @@ class b2_api
 			// File ID
 			$fileId = $result->fileId;
 			
+			// Part size - maximum equal to $this->largeFileLimit
+			$partSize = $this->recommendedPartSize;
+			if($partSize > $this->largeFileLimit) $partSize = $this->largeFileLimit;
+			
 			// Parts
-			$partsCount = ceil($size / $this->recommendedPartSize);
+			$partsCount = ceil($size / $partSize);
 			
 			// Body
 			$body = file_get_contents($filePath);
@@ -518,9 +524,9 @@ class b2_api
 			$shaArray = [];
 			for($i = 1; $i <= $partsCount; $i++) {
 				// Part bytes
-				$bytesSent = ($i - 1) * $this->recommendedPartSize;
+				$bytesSent = ($i - 1) * $partSize;
 				$bytesLeft = $size - $bytesSent;
-				$partSize = ($bytesLeft > $this->recommendedPartSize) ? $this->recommendedPartSize : $bytesLeft;
+				$partSize = ($bytesLeft > $partSize) ? $partSize : $bytesLeft;
 				
 				// Body part
 				$body_part = substr($body,$bytesSent,$partSize);
@@ -620,7 +626,7 @@ class b2_api
 	// Upload file
 	public function b2_upload_file($uploadUrl, $authorizationToken, $filePath, $fileName = NULL)
 	{
-		$call_url   = $uploadUrl; // Upload URL, obtained from the b2_get_upload_url call
+		$call_url = $uploadUrl; // Upload URL, obtained from the b2_get_upload_url call
 		$authorizationToken = $authorizationToken; // The Authorization Token, obtained from the b2_get_upload_url call (NOT $this->authorizationToken stored in this class via b2_authorize_account() call)
 		$filePath = $filePath; // The path to the file you wish to upload
 
