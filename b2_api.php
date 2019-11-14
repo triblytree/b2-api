@@ -91,6 +91,7 @@ class b2_api
 		if($error) {
 			// Re-try up to 3 times, B2 has all sort of issues, failure is built into how it works
 			if($try < 3) {
+				sleep(2);
 				$try++;
 				$this->b2_call($call_url,$headers,$data,$json_result,$try);
 			}
